@@ -11,10 +11,21 @@
           }
         ]
       ]
+    },
+    "Get a repository": {
+      "main": [
+        [
+          {
+            "node": "Git",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "createdAt": "2025-10-22T19:55:46.816Z",
-  "id": "h9tW9eM1zS1jrMuS",
+  "createdAt": "2025-10-22T19:55:47.005Z",
+  "id": "MzT8d3jfzBitoSq8",
   "isArchived": false,
   "meta": {
     "templateCredsSetupCompleted": true
@@ -68,6 +79,28 @@
           "name": "GitHub account"
         }
       }
+    },
+    {
+      "parameters": {
+        "authentication": "gitPassword",
+        "operation": "clone",
+        "repositoryPath": "/tmp/portal-pedidos",
+        "sourceRepository": "=https://github.com/mantonelli/portal-pedidos.git"
+      },
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "2bf10467-0004-4c9d-8ab7-5ed3c630e725",
+      "name": "Git",
+      "credentials": {
+        "gitPassword": {
+          "id": "ilYDLwnCbKKyzWzA",
+          "name": "Git account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -76,16 +109,16 @@
   },
   "shared": [
     {
-      "createdAt": "2025-10-22T19:55:46.816Z",
-      "updatedAt": "2025-10-22T19:55:46.816Z",
+      "createdAt": "2025-10-22T19:55:47.005Z",
+      "updatedAt": "2025-10-22T19:55:47.005Z",
       "role": "workflow:owner",
-      "workflowId": "h9tW9eM1zS1jrMuS",
+      "workflowId": "MzT8d3jfzBitoSq8",
       "projectId": "cik03iCyPMC1rSsJ"
     }
   ],
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-10-22T19:55:46.816Z",
-  "versionId": "9ee097e9-83ed-4914-bd98-fde4b09c0295"
+  "updatedAt": "2025-10-22T20:03:27.506Z",
+  "versionId": "2fde61a2-f77e-4609-8c17-585505c40193"
 }
