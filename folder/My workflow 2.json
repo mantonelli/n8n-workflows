@@ -1,0 +1,91 @@
+{
+  "active": false,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a repository",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-22T19:55:46.816Z",
+  "id": "h9tW9eM1zS1jrMuS",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ee1b69f2-8d34-4c1d-a8a7-9e152ceb8c83",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/mantonelli",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "https://github.com/mantonelli/portal-pedidos",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b5b93037-3ccb-4ec5-a07e-92988a3b99e5",
+      "name": "Get a repository",
+      "webhookId": "a6927de1-515e-4ce6-baa0-45ec3ac4b0ad",
+      "credentials": {
+        "githubApi": {
+          "id": "6yGNsabP2YkdPHv9",
+          "name": "GitHub account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-22T19:55:46.816Z",
+      "updatedAt": "2025-10-22T19:55:46.816Z",
+      "role": "workflow:owner",
+      "workflowId": "h9tW9eM1zS1jrMuS",
+      "projectId": "cik03iCyPMC1rSsJ"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-22T19:55:46.816Z",
+  "versionId": "9ee097e9-83ed-4914-bd98-fde4b09c0295"
+}
