@@ -1,0 +1,364 @@
+{
+  "active": false,
+  "connections": {
+    "PR Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get file's Diffs from PR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Review Agent": {
+      "main": [
+        [
+          {
+            "node": "Enviar Resumo para Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Best Practices": {
+      "ai_tool": [
+        [
+          {
+            "node": "Code Review Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file's Diffs from PR": {
+      "main": [
+        [
+          {
+            "node": "Create target Prompt from PR Diffs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create target Prompt from PR Diffs": {
+      "main": [
+        [
+          {
+            "node": "Code Review Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Code Review Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PR Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get file's Diffs from PR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file's Diffs from PR1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create target Prompt from PR Diffs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-23T16:52:50.591Z",
+  "id": "OxYEC3IqKL6vtYM1",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Code Review workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "mantonelli",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "portal-pedidos",
+          "mode": "name"
+        },
+        "events": [
+          "pull_request"
+        ],
+        "options": {}
+      },
+      "id": "c6c5be67-afcc-4363-b9b2-0e69ce80a087",
+      "name": "PR Trigger",
+      "type": "n8n-nodes-base.githubTrigger",
+      "position": [
+        -144,
+        336
+      ],
+      "webhookId": "2b8ec7bd-e65b-46d2-a2d9-082b137dd880",
+      "notesInFlow": false,
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "6yGNsabP2YkdPHv9",
+          "name": "GitHub account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.repository.pulls_url }}",
+        "options": {}
+      },
+      "id": "9ece83f0-67d1-4c3a-84c1-7bcb16fd44cd",
+      "name": "Get file's Diffs from PR",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        80,
+        336
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = $input.all().map(item => item.json);\n\nlet diffs = '';\n\nfor (const file of files) {\n  diffs += `### Fichier : ${file.filename}\\n\\n`;\n\n  if (file.patch) {\n    // IMPORTANT : On remplace tous les triple backticks par simple (ou échappement)\n    const safePatch = file.patch.replace(/```/g, \"''\");\n\n    diffs += \"```diff\\n\";\n    diffs += safePatch;\n    diffs += \"\\n```\\n\";\n  } else {\n    diffs += \"_Pas de patch disponible (probablement fichier binaire)._\";\n  }\n\n  diffs += \"\\n---\\n\\n\";\n}\n\nconst userMessage = `\n\n\nReview the following code changes:\n\n${diffs}\n\n---\n\nYour mission:\n\n- Summarize the key changes and their purpose, focusing only on what was modified.\n- Identify any potential issues, code smells, or improvements. Use the Code Best Practices tool for rules that must be applied.\n- Classify each finding as one of:\n  - 🟥 Critical – potential bug, regression risk, or security concern.\n  - 🟧 Warning – maintainability or performance issue.\n  - 🟩 Suggestion – stylistic or readability improvement.\n\nOutput format:\n\n1. **Summary of the changes**  \n   A short paragraph (2–3 sentences) describing what the main updates do.\n\n2. **Findings**  \n   - [Severity emoji] Short, actionable description of each relevant issue or insight.\n\n3. **Overall assessment**  \n   A one-line conclusion about code quality and risk level (Low / Medium / High).\n\nGuidelines:\n- Add a concise snippet with the problematic code\n- Be concise — the final message should fit comfortably in a Telegram message.\n- Use a professional but conversational tone suitable for internal dev updates.\n\n`;\n\nreturn [\n  {\n    json: {\n      user_message: userMessage.trim()\n    }\n  }\n];"
+      },
+      "id": "0fa41ffd-6386-4859-a9de-b2650ffd580c",
+      "name": "Create target Prompt from PR Diffs",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        512,
+        336
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1zH6EFBr5loBacVCj6hQyG5idbdXxKO52M570BKWIr3Q",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Code Review Rules",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "174621c8-5ff9-43f0-b4cd-c8dcc5815839",
+      "name": "Code Best Practices",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        976,
+        544
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TeuJTArtrJli5Agz",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_message }}",
+        "options": {
+          "systemMessage": "You are a senior Angular and OpenEdge 4GL developer.\n\nYou are an AI code review assistant with access to external tools for analysis and communication.\n\nIf a task requires additional context, computation, or external actions (such as sending messages, fetching data, or analyzing code structure), use the appropriate available tool.\n\nAlways explain briefly why you're using a tool before doing so."
+        }
+      },
+      "id": "ddd60707-91ee-4618-a344-e20ca296b291",
+      "name": "Code Review Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        736,
+        336
+      ],
+      "typeVersion": 1.9,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        672,
+        544
+      ],
+      "id": "a6996a28-9a35-476e-a1ba-98be1de73e30",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "btBJbbECtqith3HP",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "mantonelli",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "portal-pedidos",
+          "mode": "name"
+        },
+        "events": [
+          "push"
+        ],
+        "options": {}
+      },
+      "id": "a0d77292-fe55-4ba4-8eb2-229a467c18e4",
+      "name": "PR Trigger1",
+      "type": "n8n-nodes-base.githubTrigger",
+      "position": [
+        -144,
+        544
+      ],
+      "webhookId": "2b8ec7bd-e65b-46d2-a2d9-082b137dd880",
+      "notesInFlow": false,
+      "typeVersion": 1,
+      "credentials": {
+        "githubApi": {
+          "id": "6yGNsabP2YkdPHv9",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/mantonelli/portal-pedidos/compare/{{ $json.body.before }}...{{ $json.body.after }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "id": "5a9d0fc0-8c57-4b2e-b0e7-6fc1cdd8fe9f",
+      "name": "Get file's Diffs from PR1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        80,
+        544
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "githubApi": {
+          "id": "6yGNsabP2YkdPHv9",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "files",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        304,
+        544
+      ],
+      "id": "90de1d6e-1df9-4fc4-b05c-0e1a2bd6285a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "chatId": "-4802074380",
+        "text": "=Arquivo: {{ $('Split Out').item.json.filename }}\nCommit: {{ $('PR Trigger1').item.json.body.commits[0].url }}\n---\n{{ $json.output }}",
+        "additionalFields": {}
+      },
+      "id": "cf220099-75ef-46d7-a5ee-b4646e4f0e2d",
+      "name": "Enviar Resumo para Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        336
+      ],
+      "webhookId": "e75ed376-9606-424c-8935-2d090b3f1b7f",
+      "credentials": {
+        "telegramApi": {
+          "id": "ChZoGcZxl55mYAEN",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "C4mgIQk4gEpFwVCf"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-23T16:52:50.591Z",
+      "updatedAt": "2025-10-23T16:52:50.591Z",
+      "role": "workflow:owner",
+      "workflowId": "OxYEC3IqKL6vtYM1",
+      "projectId": "cik03iCyPMC1rSsJ"
+    }
+  ],
+  "staticData": {
+    "node:PR Trigger1": {}
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-28T12:16:13.309Z",
+  "versionId": "f7da49ff-4a43-4736-8ad5-00ddd4e5f5c4"
+}
